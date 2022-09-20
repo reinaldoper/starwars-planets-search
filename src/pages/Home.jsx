@@ -1,9 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import StarContext from '../context/StarContext';
 
 const Home = () => {
+  const [name, setName] = useState('');
   const { star } = useContext(StarContext);
-  const startReturn = star.map((item, index) => (
+  const [filtered, setFiltered] = useState([]);
+  useEffect(() => {
+    setFiltered(star.filter((item) => item.name.includes(name)));
+  }, [name, star]);
+  const startReturn = filtered.map((item, index) => (
     <tbody key={ index }>
       <tr>
         <td>{item.name}</td>
@@ -24,6 +29,13 @@ const Home = () => {
   ));
   return (
     <div>
+      <input
+        type="text"
+        data-testid="name-filter"
+        name="name"
+        value={ name }
+        onChange={ (e) => setName(e.target.value) }
+      />
       <table border="1">
         <thead>
           <tr>
