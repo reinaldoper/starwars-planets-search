@@ -5,9 +5,27 @@ const Home = () => {
   const [name, setName] = useState('');
   const { star } = useContext(StarContext);
   const [filtered, setFiltered] = useState([]);
+  const [selected, setSelected] = useState('population');
+  const [igualdate, setIgualdate] = useState('maior que');
+  const [number, setNumber] = useState(0);
   useEffect(() => {
     setFiltered(star.filter((item) => item.name.includes(name)));
   }, [name, star]);
+
+  const filteredValue = () => {
+    if (igualdate === 'maior que') {
+      const ver = star.filter((item) => Number(item[selected]) > Number(number));
+      setFiltered(ver);
+    } if (igualdate === 'menor que') {
+      const ver1 = star.filter((item) => Number(item[selected]) < Number(number));
+      setFiltered(ver1);
+    }
+    if (igualdate === 'igual a') {
+      const ver2 = star.filter((item) => Number(item[selected]) === Number(number));
+      setFiltered(ver2);
+    }
+  };
+
   const startReturn = filtered.map((item, index) => (
     <tbody key={ index }>
       <tr>
@@ -29,6 +47,36 @@ const Home = () => {
   ));
   return (
     <div>
+      <select
+        name="selected"
+        value={ selected }
+        data-testid="column-filter"
+        onChange={ (e) => setSelected(e.target.value) }
+      >
+        <option value="population">population</option>
+        <option value="orbital_period">orbital_period</option>
+        <option value="diameter">diameter</option>
+        <option value="rotation_period">rotation_period</option>
+        <option value="surface_water">surface_water</option>
+      </select>
+      <select
+        name="igualdate"
+        value={ igualdate }
+        data-testid="comparison-filter"
+        onChange={ (e) => setIgualdate(e.target.value) }
+      >
+        <option value="maior que">maior que</option>
+        <option value="menor que">menor que</option>
+        <option value="igual a">igual a</option>
+      </select>
+      <input
+        type="number"
+        data-testid="value-filter"
+        max="10000000"
+        name="number"
+        value={ number }
+        onChange={ (e) => setNumber(e.target.value) }
+      />
       <input
         type="text"
         data-testid="name-filter"
@@ -36,6 +84,13 @@ const Home = () => {
         value={ name }
         onChange={ (e) => setName(e.target.value) }
       />
+      <button
+        type="button"
+        data-testid="button-filter"
+        onClick={ filteredValue }
+      >
+        Filtrar
+      </button>
       <table border="1">
         <thead>
           <tr>
@@ -61,15 +116,3 @@ const Home = () => {
 };
 
 export default Home;
-/* return (
-        <tbody key={ id }>
-          <tr>
-            <td>{description}</td>
-            <td>{tag}</td>
-            <td>{method}</td>
-            <td>{valor}</td>
-            <td>{name}</td>
-            <td>{convertMoeda}</td>
-            <td>{convertReal}</td>
-            <td>Real</td>
-            <td> */
