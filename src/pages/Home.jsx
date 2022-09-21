@@ -14,15 +14,15 @@ const Home = () => {
 
   const filteredValue = () => {
     if (igualdate === 'maior que') {
-      const ver = star.filter((item) => Number(item[selected]) > Number(number));
+      const ver = filtered.filter((item) => Number(item[selected]) > Number(number));
       setFiltered(ver);
     } if (igualdate === 'menor que') {
-      const ver1 = star.filter((item) => Number(item[selected]) < Number(number));
-      setFiltered(ver1);
+      const ver = filtered.filter((item) => Number(item[selected]) < Number(number));
+      setFiltered(ver);
     }
     if (igualdate === 'igual a') {
-      const ver2 = star.filter((item) => Number(item[selected]) === Number(number));
-      setFiltered(ver2);
+      const ver = filtered.filter((item) => Number(item[selected]) === Number(number));
+      setFiltered(ver);
     }
   };
 
