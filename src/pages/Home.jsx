@@ -27,7 +27,7 @@ const Home = () => {
   };
 
   const startReturn = filtered.map((item, index) => (
-    <tbody key={ index }>
+    <tbody key={ index } data-testid="table-id">
       <tr>
         <td>{item.name}</td>
         <td>{item.rotation_period}</td>
