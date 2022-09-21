@@ -8,21 +8,62 @@ const Home = () => {
   const [selected, setSelected] = useState('population');
   const [igualdate, setIgualdate] = useState('maior que');
   const [number, setNumber] = useState(0);
+  const [myForm, setMyForm] = useState(['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water',
+  ]);
+  const [listFilter, setListFilter] = useState({
+    filterede: [],
+  });
   useEffect(() => {
     setFiltered(star.filter((item) => item.name.includes(name)));
   }, [name, star]);
 
   const filteredValue = () => {
+    const valor = { igualdate, selected, number };
     if (igualdate === 'maior que') {
       const ver = filtered.filter((item) => Number(item[selected]) > Number(number));
       setFiltered(ver);
+      setListFilter((state) => ({
+        ...state,
+        filterede: [...state.filterede, valor],
+      }));
     } if (igualdate === 'menor que') {
       const ver = filtered.filter((item) => Number(item[selected]) < Number(number));
       setFiltered(ver);
+      setListFilter((state) => ({
+        ...state,
+        filterede: [...state.filterede, valor],
+      }));
     }
     if (igualdate === 'igual a') {
       const ver = filtered.filter((item) => Number(item[selected]) === Number(number));
       setFiltered(ver);
+      setListFilter((state) => ({
+        ...state,
+        filterede: [...state.filterede, valor],
+      }));
+    }
+    switch (selected) {
+    case 'population':
+      setMyForm(() => (['orbital_period',
+        'diameter', 'rotation_period', 'surface_water']));
+      break;
+    case 'orbital_period':
+      setMyForm(() => ([
+        'diameter', 'rotation_period', 'surface_water']));
+      break;
+    case 'diameter':
+      setMyForm(() => ([
+        'rotation_period', 'surface_water']));
+      break;
+    case 'rotation_period':
+      setMyForm(() => (['surface_water']));
+      break;
+    case 'surface_water':
+      setMyForm(() => ([]));
+      break;
+    default:
+      break;
     }
   };
 
@@ -45,19 +86,29 @@ const Home = () => {
       </tr>
     </tbody>
   ));
+  const result = [listFilter];
+  let newResult = [];
+  if (result[0].filterede.length > 0) {
+    newResult = result[0].filterede.map((item, index) => (
+      <div key={ index } data-testid="filter">
+        <p>{item.selected}</p>
+        <button type="button">X</button>
+      </div>
+    ));
+  }
   return (
     <div>
       <select
         name="selected"
-        value={ selected }
         data-testid="column-filter"
+        value={ selected }
         onChange={ (e) => setSelected(e.target.value) }
       >
-        <option value="population">population</option>
-        <option value="orbital_period">orbital_period</option>
-        <option value="diameter">diameter</option>
-        <option value="rotation_period">rotation_period</option>
-        <option value="surface_water">surface_water</option>
+        {myForm.map((item, index) => (
+          <option key={ index }>
+            {item}
+          </option>
+        ))}
       </select>
       <select
         name="igualdate"
@@ -91,6 +142,7 @@ const Home = () => {
       >
         Filtrar
       </button>
+      {newResult}
       <table border="1">
         <thead>
           <tr>
