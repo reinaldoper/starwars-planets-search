@@ -43,24 +43,12 @@ const Home = () => {
         filterede: [...state.filterede, valor],
       }));
     }
+    /* setMyForm(() => (['orbital_period',
+      'diameter', 'rotation_period', 'surface_water'])); */
     switch (selected) {
     case 'population':
       setMyForm(() => (['orbital_period',
         'diameter', 'rotation_period', 'surface_water']));
-      break;
-    case 'orbital_period':
-      setMyForm(() => ([
-        'diameter', 'rotation_period', 'surface_water']));
-      break;
-    case 'diameter':
-      setMyForm(() => ([
-        'rotation_period', 'surface_water']));
-      break;
-    case 'rotation_period':
-      setMyForm(() => (['surface_water']));
-      break;
-    case 'surface_water':
-      setMyForm(() => ([]));
       break;
     default:
       break;
