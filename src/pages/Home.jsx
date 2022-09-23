@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import StarContext from '../context/StarContext';
 
 const Home = () => {
@@ -8,53 +8,53 @@ const Home = () => {
   const [selected, setSelected] = useState('population');
   const [igualdate, setIgualdate] = useState('maior que');
   const [number, setNumber] = useState(0);
+  const [columms] = useState(['population', 'orbital_period',
+    'diameter', 'rotation_period', 'surface_water']);
   const [myForm, setMyForm] = useState(['population', 'orbital_period',
-    'diameter', 'rotation_period', 'surface_water',
-  ]);
-  const [listFilter, setListFilter] = useState({
-    filterede: [],
-  });
+    'diameter', 'rotation_period', 'surface_water']);
+
+  const [filtList, setListFilter] = useState([]);
+  const myFilter = useCallback(() => {
+    const colun = filtList.map((item) => item.selected);
+    const colunFilter = columms.filter((item) => !colun.some((col) => col === item));
+    setMyForm(colunFilter);
+    setSelected(colunFilter[0]);
+  }, [filtList, columms]);
+  useEffect(() => {
+    myFilter();
+  }, [myFilter, filtList]);
   useEffect(() => {
     setFiltered(star.filter((item) => item.name.includes(name)));
   }, [name, star]);
 
   const filteredValue = () => {
-    const valor = { igualdate, selected, number };
-    if (igualdate === 'maior que') {
-      const ver = filtered.filter((item) => Number(item[selected]) > Number(number));
-      setFiltered(ver);
-      setListFilter((state) => ({
-        ...state,
-        filterede: [...state.filterede, valor],
-      }));
-    } if (igualdate === 'menor que') {
-      const ver = filtered.filter((item) => Number(item[selected]) < Number(number));
-      setFiltered(ver);
-      setListFilter((state) => ({
-        ...state,
-        filterede: [...state.filterede, valor],
-      }));
+    let updatedPlanets = [...star];
+    console.log(filtList);
+    if (filtList.length > 0) {
+      filtList.forEach((filter) => {
+        switch (filter.igualdate) {
+        case 'maior que':
+          updatedPlanets = updatedPlanets
+            .filter((planet) => Number(planet[filter.selected]) > Number(filter.number));
+          break;
+        case 'menor que':
+          updatedPlanets = updatedPlanets
+            .filter((planet) => Number(planet[filter.selected]) < Number(filter.number));
+          break;
+        case 'igual a':
+          updatedPlanets = updatedPlanets
+            .filter((item) => Number(item[filter.selected]) === Number(filter.number));
+          break;
+        default: break;
+        }
+      });
     }
-    if (igualdate === 'igual a') {
-      const ver = filtered.filter((item) => Number(item[selected]) === Number(number));
-      setFiltered(ver);
-      setListFilter((state) => ({
-        ...state,
-        filterede: [...state.filterede, valor],
-      }));
-    }
-    /* setMyForm(() => (['orbital_period',
-      'diameter', 'rotation_period', 'surface_water'])); */
-    switch (selected) {
-    case 'population':
-      setMyForm(() => (['orbital_period',
-        'diameter', 'rotation_period', 'surface_water']));
-      break;
-    default:
-      break;
-    }
+    setFiltered(updatedPlanets);
   };
 
+  useEffect(() => {
+    filteredValue();
+  }, [filtList]);
   const startReturn = filtered.map((item, index) => (
     <tbody key={ index } data-testid="table-id">
       <tr>
@@ -74,16 +74,32 @@ const Home = () => {
       </tr>
     </tbody>
   ));
-  const result = [listFilter];
+
+  const handClick = (item) => {
+    const result = filtList.filter((element) => element.selected !== item);
+    setListFilter(result);
+  };
+
+  const removeFilters = () => {
+    setListFilter([]);
+  };
   let newResult = [];
-  if (result[0].filterede.length > 0) {
-    newResult = result[0].filterede.map((item, index) => (
+  if (filtList.length > 0) {
+    newResult = filtList.map((item, index) => (
       <div key={ index } data-testid="filter">
         <p>{item.selected}</p>
-        <button type="button">X</button>
+        <p>{item.igualdate}</p>
+        <p>{item.number}</p>
+        <button
+          type="button"
+          onClick={ () => handClick(item.selected) }
+        >
+          X
+        </button>
       </div>
     ));
   }
+
   return (
     <div>
       <select
@@ -126,9 +142,18 @@ const Home = () => {
       <button
         type="button"
         data-testid="button-filter"
-        onClick={ filteredValue }
+        onClick={ () => {
+          setListFilter((state) => [...state, { igualdate, selected, number }]);
+        } }
       >
         Filtrar
+      </button>
+      <button
+        type="button"
+        data-testid="button-remove-filters"
+        onClick={ removeFilters }
+      >
+        Remover todas filtragens
       </button>
       {newResult}
       <table border="1">
