@@ -4,6 +4,7 @@ import StarContext from './StarContext';
 
 const StarProvider = ({ children }) => {
   const [star, setStar] = useState([]);
+  const [filtered, setFiltered] = useState([]);
 
   useEffect(() => {
     const getStar = async () => {
@@ -20,6 +21,8 @@ const StarProvider = ({ children }) => {
   }, []);
   const contextValue = {
     star,
+    filtered,
+    setFiltered,
   };
   return (
     <StarContext.Provider value={ contextValue }>

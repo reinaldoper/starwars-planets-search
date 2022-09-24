@@ -1,10 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import StarContext from '../context/StarContext';
+import Table from './Table';
 
 const Home = () => {
   const [name, setName] = useState('');
-  const { star } = useContext(StarContext);
-  const [filtered, setFiltered] = useState([]);
+  const { star, filtered, setFiltered } = useContext(StarContext);
+  /* const [filtered, setFiltered] = useState([]); */
   const [selected, setSelected] = useState('population');
   const [igualdate, setIgualdate] = useState('maior que');
   const [number, setNumber] = useState(0);
@@ -26,10 +27,8 @@ const Home = () => {
   useEffect(() => {
     setFiltered(star.filter((item) => item.name.includes(name)));
   }, [name, star]);
-
   const filteredValue = () => {
     let updatedPlanets = [...star];
-    console.log(filtList);
     if (filtList.length > 0) {
       filtList.forEach((filter) => {
         switch (filter.igualdate) {
@@ -41,15 +40,15 @@ const Home = () => {
           updatedPlanets = updatedPlanets
             .filter((planet) => Number(planet[filter.selected]) < Number(filter.number));
           break;
-        case 'igual a':
+        default:
           updatedPlanets = updatedPlanets
             .filter((item) => Number(item[filter.selected]) === Number(filter.number));
           break;
-        default: break;
         }
       });
     }
     setFiltered(updatedPlanets);
+    setNumber('');
   };
 
   useEffect(() => {
@@ -58,7 +57,7 @@ const Home = () => {
   const startReturn = filtered.map((item, index) => (
     <tbody key={ index } data-testid="table-id">
       <tr>
-        <td>{item.name}</td>
+        <td data-testid="planet-name">{item.name}</td>
         <td>{item.rotation_period}</td>
         <td>{item.orbital_period}</td>
         <td>{item.diameter}</td>
@@ -155,6 +154,7 @@ const Home = () => {
       >
         Remover todas filtragens
       </button>
+      <Table />
       {newResult}
       <table border="1">
         <thead>
